@@ -1,2 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @import "tailwindcss";
 
+
+
+/* root colors */
+:root {
+  --indigo-1000: #11132d; /* Main Deep Sidebar BG */
+  --indigo-1050: #1a1c3d; /* Borders & Line Separators */
+  --indigo-1100: #1c1f42; /* Highlight Items & Sub-panels BG */
+  --indigo-1150: #1f224f; /* Interactive Hovers */
+  --indigo-1200: #252957; /* Container borders */
+  --indigo-1250: #2a2e63; /* Subtle Divider Lines */
+
+  --scrollbar-thumb: #7c86ff;
+  --scrollbar-thumb-hover: #555555;
+}
+
+/* theme mapping */
+@theme {
+  /* Font Family Overrides */
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Extending indigo custom tokens without touching default 50-950 scales */
+  --color-indigo-1000: var(--indigo-1000);
+  --color-indigo-1050: var(--indigo-1050);
+  --color-indigo-1100: var(--indigo-1100);
+  --color-indigo-1150: var(--indigo-1150);
+  --color-indigo-1200: var(--indigo-1200);
+  --color-indigo-1250: var(--indigo-1250);
+
+  --color-scroll-thumb: var(--scrollbar-thumb);
+  --color-scroll-hover: var(--scrollbar-thumb-hover);
+
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background:var(--scrollbar-thumb);
+  border-radius: None;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
