@@ -40,9 +40,14 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Scrollbar */
+/* Vertical scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
+}
+
+/* Horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  height: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
