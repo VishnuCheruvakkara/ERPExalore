@@ -1,19 +1,368 @@
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import FormInput from '../../../components/ui/FormInput';
+import FormButton from '../../../components/ui/FormButton';
+import { itemValidationSchema } from '../../../utils/validationSchema';
+import {
+    getInventoryLookups,
+    createInventoryItem,
+} from '../../../services/inventoryService';
+import {
+    BEHAVIOUR_OPTIONS,
+    STATUS_OPTIONS,
+    TAXABLE_OPTIONS,
+} from '../../../constants/itemOptions';
+import toast from 'react-hot-toast';
+
 export function GeneralTab() {
+    const [isEditing, setIsEditing] = useState(false);
+    const [loadingLookups, setLoadingLookups] = useState(false);
+    const [dropdowns, setDropdowns] = useState({
+        item_groups: [],
+        shelves: [],
+        manufacturers: [],
+        unit_types: [],
+    });
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(itemValidationSchema),
+        defaultValues: {
+            item_code: '',
+            name_1: '',
+            name_2: '',
+            generic_name: '',
+            description: '',
+            behaviour: 'purchase_item',
+            group_code: '',
+            status: 'active',
+            taxable_status: 'non_taxable',
+            shelf_code: '',
+            manufacturer: '',
+        },
+    });
+
+    const loadDropdownData = async () => {
+        setLoadingLookups(true);
+        try {
+            const data = await getInventoryLookups();
+            setDropdowns(data);
+        } catch (error) {
+            console.error('Unable to load inventory dropdown data', error);
+        } finally {
+            setLoadingLookups(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isEditing && !dropdowns.item_groups.length) {
+            loadDropdownData();
+        }
+    }, [isEditing]);
+
+    const onFormSubmit = async (data) => {
+        try {
+            await createInventoryItem(data);
+            toast.success("Form submitted successful")
+
+            setIsEditing(false);
+            reset();
+        } catch (error) {
+            console.error('API preservation failure', error);
+            toast.error("Error while form submission, try again")
+            setIsEditing(true);
+        }
+    };
+
+    const handleNewOrSaveClick = (e) => {
+        if (!isEditing) {
+            setIsEditing(true);
+            return;
+        }
+        handleSubmit(onFormSubmit,() => toast.error('Please fix the errors'))(e);
+    };
+
+    const handleClear = () => {
+        setIsEditing(false);
+        reset();
+    };
+
+    const renderOptions = (items, keyLabel) => {
+        if (loadingLookups) return <option value="">Loading...</option>;
+        if (!items.length)
+            return <option value="">No options available</option>;
+
+        return items.map((item) => (
+            <option key={item.id} value={item.id}>
+                {keyLabel === 'group'
+                    ? `${item.code} - ${item.name}`
+                    : item.code || item.name}
+            </option>
+        ));
+    };
+
     return (
-        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-6 space-y-6">
-            <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">Basic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="space-y-1.5"><label className="text-xs font-medium text-slate-600">Item Code</label><input type="text" placeholder="Enter item code" className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-slate-50/50 focus:bg-white" /></div>
-                    <div className="space-y-1.5"><label className="text-xs font-medium text-slate-600">Name 2</label><input type="text" placeholder="Enter name 2" className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-slate-50/50 focus:bg-white" /></div>
-                    <div className="space-y-1.5"><label className="text-xs font-medium text-slate-600">Name 1 *</label><input type="text" placeholder="Enter name 1" className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-slate-50/50 focus:bg-white" /></div>
+        <div className="w-full space-y-4 rounded-md p-2 bg-white">
+            {/* Basic Information Section */}
+            <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="bg-slate-50 border-b border-slate-200/60 px-4 py-2">
+                    <h3 className="text-xs font-bold text-slate-800 tracking-wide">
+                        Basic Information
+                    </h3>
+                </div>
+
+                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 items-start">
+                    <div className="space-y-1 min-h-[75px]">
+                        <FormInput
+                            label="Item Code"
+                            placeholder="Enter item code *"
+                            required
+                            disabled={!isEditing}
+                            error={errors.item_code?.message}
+                            {...register('item_code')}
+                        />
+                        {errors.item_code && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.item_code.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px]">
+                        <FormInput
+                            label="Name 2"
+                            placeholder="Enter name 2"
+                            disabled={!isEditing}
+                            error={errors.name_2?.message}
+                            {...register('name_2')}
+                        />
+                        {errors.name_2 && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.name_2.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px] w-full">
+                        <FormInput
+                            label="Name 1"
+                            placeholder="Enter name 1 *"
+                            required
+                            className="w-full"
+                            disabled={!isEditing}
+                            error={errors.name_1?.message}
+                            {...register('name_1')}
+                        />
+                        {errors.name_1 && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.name_1.message}
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
-            
-            <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
-                <button className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-xs font-medium">New</button>
-                <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-medium">List</button>
-                <button className="px-4 py-1.5 bg-slate-500 hover:bg-slate-600 text-white rounded text-xs font-medium">Clear</button>
+
+            {/* Additional Information Section */}
+            <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="bg-slate-50 border-b border-slate-200/60 px-4 py-2">
+                    <h3 className="text-xs font-bold text-slate-800 tracking-wide">
+                        Additional Information
+                    </h3>
+                </div>
+
+                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 items-start">
+                    <div className="space-y-1 min-h-[75px]">
+                        <FormInput
+                            label="Generic Name"
+                            placeholder="Enter generic name"
+                            disabled={!isEditing}
+                            error={errors.generic_name?.message}
+                            {...register('generic_name')}
+                        />
+                        {errors.generic_name && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.generic_name.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px] md:col-span-2">
+                        <FormInput
+                            label="Description"
+                            placeholder="Enter description"
+                            disabled={!isEditing}
+                            error={errors.description?.message}
+                            {...register('description')}
+                        />
+                        {errors.description && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.description.message}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Configuration Section */}
+            <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="bg-slate-50 border-b border-slate-200/60 px-4 py-2">
+                    <h3 className="text-xs font-bold text-slate-800 tracking-wide">
+                        Configuration
+                    </h3>
+                </div>
+
+                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 items-start">
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Behaviour{' '}
+                            <span className="text-red-500 font-bold">* *</span>
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('behaviour')}
+                        >
+                            {BEHAVIOUR_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.behaviour && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.behaviour.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Group Code{' '}
+                            <span className="text-red-500 font-bold">* *</span>
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('group_code')}
+                        >
+                            <option value="">Select Group Code *...</option>
+                            {renderOptions(dropdowns.item_groups, 'group')}
+                        </select>
+                        {errors.group_code && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.group_code.message}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Status Field Updated: It is now mutable if isEditing is true */}
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Status{' '}
+                            <span className="text-red-500 font-bold">* *</span>
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('status')}
+                        >
+                            {STATUS_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.status && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.status.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Taxable Status{' '}
+                            <span className="text-red-500 font-bold">* *</span>
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('taxable_status')}
+                        >
+                            {TAXABLE_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.taxable_status && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.taxable_status.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Shelf Code
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('shelf_code')}
+                        >
+                            <option value="">Select Shelf Code...</option>
+                            {renderOptions(dropdowns.shelves, 'shelf')}
+                        </select>
+                        {errors.shelf_code && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.shelf_code.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 min-h-[75px]">
+                        <label className="text-[11px] font-semibold text-slate-600 block">
+                            Manufacturer
+                        </label>
+                        <select
+                            disabled={!isEditing}
+                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                            {...register('manufacturer')}
+                        >
+                            <option value="">Select Manufacturer...</option>
+                            {renderOptions(
+                                dropdowns.manufacturers,
+                                'manufacturer',
+                            )}
+                        </select>
+                        {errors.manufacturer && (
+                            <p className="text-red-500 text-xs mt-0.5">
+                                {errors.manufacturer.message}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Action Buttons Section */}
+            <div className="flex justify-end items-center gap-2 pt-2">
+                <FormButton variant="success" onClick={handleNewOrSaveClick}>
+                    {isEditing ? 'Save' : 'New'}
+                </FormButton>
+
+                <FormButton variant="primary" onClick={() => {}}>
+                    List
+                </FormButton>
+
+                <FormButton variant="secondary" onClick={handleClear}>
+                    Clear
+                </FormButton>
             </div>
         </div>
     );

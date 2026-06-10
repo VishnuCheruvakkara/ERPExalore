@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     # Custom Apps
     "accounts",
+    "inventory",
+    "sales"
 ]
 
 REST_FRAMEWORK = {

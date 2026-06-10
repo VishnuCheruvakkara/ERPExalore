@@ -30,6 +30,10 @@ export const userRoutes = [
                 element: <ItemFileLayout />,
                 children: [
                     {
+                        index: true,
+                        element: <GeneralTab />,
+                    },
+                    {
                         path: 'general',
                         element: <GeneralTab />,
                     },

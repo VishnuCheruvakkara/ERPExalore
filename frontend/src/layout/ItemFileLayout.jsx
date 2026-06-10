@@ -1,7 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { FaFileInvoice, FaSliders, FaReceipt, FaImage } from 'react-icons/fa6';
-import { MdGridOn } from "react-icons/md";
-import { MdFormatListBulleted } from 'react-icons/md';
+import { FaFileInvoice, FaSliders, FaImage } from 'react-icons/fa6';
+import { MdGridOn, MdFormatListBulleted } from "react-icons/md";
 
 function ItemFileLayout() {
     const location = useLocation();
@@ -38,8 +37,11 @@ function ItemFileLayout() {
     ];
 
     return (
-        <div className="flex flex-col h-full w-full space-y-4">
-            <div className="flex items-center gap-3 border-b rounded-lg border-slate-200 p-2 bg-white">
+        // Changed h-full to max-h-full and added overflow-hidden to prevent layout shattering
+        <div className="flex flex-col h-full w-full space-y-3 p-2 overflow-hidden">
+            
+            {/* Header */}
+            <div className="flex items-center gap-3 border-b rounded-lg border-slate-200 p-2 bg-white flex-shrink-0">
                 <div className="p-2.5 bg-slate-200 text-slate-700 rounded-lg shadow-xs">
                     <MdGridOn className="h-5 w-5" />
                 </div>
@@ -53,29 +55,34 @@ function ItemFileLayout() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto  ">
+            {/* Tabs Container - flex-shrink-0 keeps it locked at the top */}
+            <div className="flex items-center gap-2 overflow-x-auto  w-full flex-shrink-0">
                 {tabs.map((tab) => {
                     const TabIcon = tab.icon;
-                    const isActive = location.pathname === tab.path;
+                    
+                    // Matches exact path OR defaults 'general' styling on base URL layout
+                    const isActive = 
+                        location.pathname === tab.path || 
+                        (tab.id === 'general' && location.pathname === '/inventory/definitions/item-file');
 
                     return (
                         <Link
                             key={tab.id}
                             to={tab.path}
-                            className={`flex items-start gap-2.5 rounded-lg border px-4 py-2.5 min-w-40 transition-all cursor-pointer ${
+                            className={`flex items-start gap-2.5 rounded-lg border px-4 py-2 min-w-[170px] flex-shrink-0 transition-all cursor-pointer ${
                                 isActive
                                     ? 'bg-white text-indigo-600 border-slate-200 shadow-xs ring-1 ring-slate-100 font-semibold'
                                     : 'bg-transparent text-slate-700 border-transparent hover:bg-slate-50 hover:text-slate-900'
                             }`}
                         >
                             <TabIcon
-                                className={`h-4 w-4 mt-0.5 ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}
+                                className={`h-4 w-4 mt-0.5 flex-shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}
                             />
-                            <div className="flex flex-col text-left">
-                                <span className="text-xs leading-none">
+                            <div className="flex flex-col text-left min-w-0 w-full">
+                                <span className="text-xs leading-tight font-medium truncate">
                                     {tab.label}
                                 </span>
-                                <span className={`text-[10px] font-normal mt-0.5 tracking-tight truncate max-w-[130px] ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>
+                                <span className={`text-[10px] font-normal mt-0.5 tracking-tight truncate ${isActive ? 'text-indigo-400' : 'text-slate-400'}`}>
                                     {tab.desc}
                                 </span>
                             </div>
@@ -84,7 +91,8 @@ function ItemFileLayout() {
                 })}
             </div>
 
-            <div className="flex-1 w-full pt-1">
+            {/* Scrollable Tab Content Body View */}
+            <div className="flex-1 w-full overflow-y-auto pr-1">
                 <Outlet />
             </div>
         </div>

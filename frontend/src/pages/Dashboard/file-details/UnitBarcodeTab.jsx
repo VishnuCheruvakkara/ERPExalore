@@ -1,22 +1,105 @@
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import FormInput from '../../../components/ui/FormInput';
+import FormSelect from '../../../components/ui/FormSelect';
+import FormButton from '../../../components/ui/FormButton';
+import {
+    getInventoryItems,
+    getInventoryLookups,
+    createItemUnit,
+} from '../../../services/inventoryService';
+
 export function UnitBarcodeTab() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/80 p-5 space-y-4">
-                <h3 className="text-xs font-semibold text-slate-700">Unit Management</h3>
-                <div className="flex gap-3 items-end">
-                    <div className="flex-1 space-y-1"><label className="text-[11px] font-medium text-slate-500">Unit</label><select className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white text-slate-400"><option>Select unit</option></select></div>
-                    <div className="w-32 space-y-1"><label className="text-[11px] font-medium text-slate-500">Cofactor</label><input type="number" defaultValue={1} className="w-full text-xs px-3 py-2 border border-slate-200 rounded" /></div>
-                    <button className="px-4 py-2 bg-slate-300 text-white rounded text-xs font-medium cursor-not-allowed">+ Add Unit</button>
+        <div className="w-full space-y-4 rounded-md p-2 bg-white">
+            
+            {/* MAIN CONTENT SPLIT GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                
+                {/* LEFT SIDE: UNIT MANAGEMENT BLOCK */}
+                <div className="lg:col-span-2 bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden flex flex-col justify-between">
+                    <div>
+                        {/* Section Header */}
+                        <div className="bg-slate-50 border-b border-slate-200/60 px-4 py-2">
+                            <h3 className="text-xs font-bold text-slate-800 tracking-wide">
+                                Unit Management
+                            </h3>
+                        </div>
+                        
+                        {/* Input Row fields */}
+                        <div className="p-4 flex gap-4 items-end">
+                            <FormSelect label="Unit" className="flex-1">
+                                <option value="">Select unit</option>
+                            </FormSelect>
+
+                            <FormInput 
+                                label="Cofactor" 
+                                type="number" 
+                                defaultValue={1} 
+                                className="w-32"
+                            />
+
+                            <FormButton variant="disabled" disabled className="h-[34px] px-4 min-w-[90px]">
+                                + Add Unit
+                            </FormButton>
+                        </div>
+
+                        {/* Existing Units Display Area */}
+                        <div className="px-4 pb-4">
+                            <div className="border border-dashed border-slate-200 rounded p-12 text-center text-xs text-slate-400 font-medium bg-slate-50/20">
+                                No units added yet
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="border border-dashed border-slate-200 rounded-lg p-12 text-center text-xs text-slate-400">No units added yet</div>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200/80 p-5 flex flex-col justify-between">
-                <div className="space-y-4">
-                    <h3 className="text-xs font-semibold text-slate-700">Unit Settings</h3>
-                    <div className="space-y-1"><label className="text-[11px] font-medium text-slate-500">Sales Unit</label><select className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white"><option>Select sales unit</option></select></div>
+
+                {/* RIGHT SIDE: UNIT SETTINGS CONFIG BLOCK */}
+                <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden flex flex-col justify-between">
+                    <div>
+                        {/* Section Header */}
+                        <div className="bg-slate-50 border-b border-slate-200/60 px-4 py-2">
+                            <h3 className="text-xs font-bold text-slate-800 tracking-wide">
+                                Unit Settings
+                            </h3>
+                        </div>
+
+                        {/* Dropdown Options */}
+                        <div className="p-4 space-y-4">
+                            <FormSelect label="Sales Unit">
+                                <option value="">Select sales unit</option>
+                            </FormSelect>
+
+                            <FormSelect label="Stock Unit">
+                                <option value="">Select stock unit</option>
+                            </FormSelect>
+                        </div>
+                    </div>
+
+                    {/* Action Block */}
+                    <div className="p-4 pt-0 flex justify-end">
+                        <FormButton variant="blue" className="w-full sm:w-auto py-2">
+                            Save Settings
+                        </FormButton>
+                    </div>
                 </div>
-                <button className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded text-xs shadow-xs">Save Settings</button>
+
             </div>
+
+            {/* COMMON FORM FOOTER UTILITY BUTTONS */}
+            <div className="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
+                <FormButton variant="success" onClick={() => console.log('New clicked')}>
+                    New
+                </FormButton>
+                
+                <FormButton variant="primary" onClick={() => console.log('List clicked')}>
+                    List
+                </FormButton>
+                
+                <FormButton variant="secondary" onClick={() => console.log('Clear clicked')}>
+                    Clear
+                </FormButton>
+            </div>
+
         </div>
     );
 }
