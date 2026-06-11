@@ -75,6 +75,7 @@ class ItemUnitSettingsUpdateView(generics.UpdateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemUnitSettingsUpdateSerializer
     lookup_field = 'pk'
+
 # Price List Tab
 class ItemPriceListByItemView(generics.ListAPIView):
     """Load saved prices for a specific item in the Price List section"""
@@ -93,3 +94,4 @@ class ItemPriceUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """Handle update and delete of prices"""
     queryset = ItemPrice.objects.all()
     serializer_class = ItemPriceSerializer
+
