@@ -210,10 +210,15 @@ export function UnitBarcodeTab() {
                 setValue('barcode', '');
             } catch (error) {
                 console.error('Failed to save product unit:', error);
-                const msg =
+                const rawMsg =
+                    error?.response?.data?.non_field_errors?.[0] ||
                     error?.response?.data?.detail ||
-                    'Unable to save unit. Please try again.';
-                toast.error(msg);
+                    '';
+                if (rawMsg.toLowerCase().includes('unique')) {
+                    toast.error('This unit is already added for the selected product. Please select another unit.');
+                } else {
+                    toast.error(rawMsg || 'Unable to save unit. Please try again.');
+                }
             }
         } else {
             toast.error('Please fix the errors');

@@ -58,3 +58,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }
+
+/* Custom Height Utility */
+.h-8\.5 {
+  height: 2.125rem; /* 34px */
+}

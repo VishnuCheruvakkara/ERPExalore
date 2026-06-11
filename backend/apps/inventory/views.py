@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 
-from .models import Item, ItemGroup, Shelf, Manufacturer, UnitType, ItemUnit
+from .models import Item, ItemGroup, Shelf, Manufacturer, UnitType, ItemUnit, ItemPrice
 from .serializers import (
     ItemSerializer,
     ItemGroupSerializer,
@@ -12,7 +12,8 @@ from .serializers import (
     UnitTypeSerializer,
     ItemSimpleListSerializer,
     ItemUnitSerializer,
-    ItemUnitSettingsUpdateSerializer
+    ItemUnitSettingsUpdateSerializer,
+    ItemPriceSerializer
 )
 
 #General tab
@@ -74,3 +75,21 @@ class ItemUnitSettingsUpdateView(generics.UpdateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemUnitSettingsUpdateSerializer
     lookup_field = 'pk'
+# Price List Tab
+class ItemPriceListByItemView(generics.ListAPIView):
+    """Load saved prices for a specific item in the Price List section"""
+    serializer_class = ItemPriceSerializer
+
+    def get_queryset(self):
+        item_id = self.kwargs.get('item_id')
+        return ItemPrice.objects.filter(item_id=item_id).order_by('id')
+
+class ItemPriceCreateView(generics.CreateAPIView):
+    """Create Item price"""
+    queryset = ItemPrice.objects.all()
+    serializer_class = ItemPriceSerializer
+
+class ItemPriceUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """Handle update and delete of prices"""
+    queryset = ItemPrice.objects.all()
+    serializer_class = ItemPriceSerializer

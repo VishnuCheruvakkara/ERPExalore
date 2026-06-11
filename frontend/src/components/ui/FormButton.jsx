@@ -17,7 +17,7 @@ const FormButton = ({
   return (
     <button
       type={type}
-      className={`px-5 py-1.5 text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer shadow-xs min-w-[76px] ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center px-5 py-1.5 text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer shadow-xs min-w-[76px] disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
       {...rest}
     >
       {children}

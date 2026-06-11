@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Item, ItemGroup, Shelf, Manufacturer, UnitType, ItemUnit
+from .models import Item, ItemGroup, Shelf, Manufacturer, UnitType, ItemUnit, ItemPrice
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -61,3 +61,18 @@ class ItemUnitSettingsUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ['sales_unit', 'stock_unit']
+
+class ItemPriceSerializer(serializers.ModelSerializer):
+    unit_detail = UnitTypeSerializer(source='unit', read_only=True)
+
+    class Meta:
+        model = ItemPrice
+        fields = [
+            'id', 
+            'item', 
+            'price_list_type', 
+            'unit', 
+            'unit_detail', 
+            'sale_price', 
+            'minimum_selling_price'
+        ]

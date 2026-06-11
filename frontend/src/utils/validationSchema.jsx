@@ -75,3 +75,18 @@ export const unitBarcodeSchema = z.object({
     salesUnit: z.string().min(1, "Sales Unit is required"),
     stockUnit: z.string().min(1, "Stock Unit is required"),
 });
+
+export const priceListSchema = z.object({
+    selectedProductId: z.string().min(1, "Product is required"),
+    price_list_type: z.string().min(1, "Price Type is required"),
+    unit: z.string().min(1, "Unit is required"),
+    sale_price: z.coerce
+        .number({ invalid_type_error: "Sale Price is required" })
+        .gt(1, "Must be greater than 1"),
+    minimum_selling_price: z.coerce
+        .number({ invalid_type_error: "Min Selling Price is required" })
+        .gt(1, "Must be greater than 1"),
+}).refine((data) => data.minimum_selling_price <= data.sale_price, {
+    message: "Min Selling Price cannot exceed Sale Price",
+    path: ["minimum_selling_price"],
+});

@@ -14,3 +14,7 @@ export const TAXABLE_OPTIONS = [
     { value: 'taxable', label: 'Taxable' },
     { value: 'non_taxable', label: 'Non-Taxable' },
 ];
+export const PRICE_TYPE_OPTIONS = [
+    { value: 'RETAIL', label: 'Retail' },
+    { value: 'WHOLESALE', label: 'Wholesale' },
+];

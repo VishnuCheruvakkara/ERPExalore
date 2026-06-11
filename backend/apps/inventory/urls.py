@@ -7,7 +7,10 @@ from .views import (
     ItemUnitCreateView,
     ItemUnitListByItemView,
     ItemUnitUpdateDestroyView,
-    ItemUnitSettingsUpdateView
+    ItemUnitSettingsUpdateView,
+    ItemPriceListByItemView,
+    ItemPriceCreateView,
+    ItemPriceUpdateDestroyView
 )
 
 urlpatterns = [
@@ -20,4 +23,8 @@ urlpatterns = [
     path('units/', ItemUnitCreateView.as_view(), name='inventory-units'),
     path('units/<int:pk>/', ItemUnitUpdateDestroyView.as_view(), name='inventory-unit-detail'),
     path('items/<int:pk>/unit-settings/', ItemUnitSettingsUpdateView.as_view(), name='item-unit-settings-update'),
+    # Price list tab
+    path('items/<int:item_id>/prices/', ItemPriceListByItemView.as_view(), name='inventory-item-prices'),
+    path('prices/', ItemPriceCreateView.as_view(), name='inventory-prices'),
+    path('prices/<int:pk>/', ItemPriceUpdateDestroyView.as_view(), name='inventory-price-detail'),
 ]
