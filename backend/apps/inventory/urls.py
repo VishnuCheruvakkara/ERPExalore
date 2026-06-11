@@ -10,7 +10,8 @@ from .views import (
     ItemUnitSettingsUpdateView,
     ItemPriceListByItemView,
     ItemPriceCreateView,
-    ItemPriceUpdateDestroyView
+    ItemPriceUpdateDestroyView,
+    ItemPhotoUploadView
 )
 
 urlpatterns = [
@@ -27,4 +28,6 @@ urlpatterns = [
     path('items/<int:item_id>/prices/', ItemPriceListByItemView.as_view(), name='inventory-item-prices'),
     path('prices/', ItemPriceCreateView.as_view(), name='inventory-prices'),
     path('prices/<int:pk>/', ItemPriceUpdateDestroyView.as_view(), name='inventory-price-detail'),
+    # Image upload tab
+    path('items/upload-photo/', ItemPhotoUploadView.as_view(), name='item-upload-photo'),
 ]

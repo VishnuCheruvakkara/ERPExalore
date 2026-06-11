@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
@@ -13,8 +13,11 @@ from .serializers import (
     ItemSimpleListSerializer,
     ItemUnitSerializer,
     ItemUnitSettingsUpdateSerializer,
-    ItemPriceSerializer
+    ItemPriceSerializer,
+    ItemPhotoUploadSerializer
 )
+
+from apps.common.cloudinary_service import CloudinaryService
 
 #General tab
 class InventoryLookupView(APIView):
@@ -95,3 +98,70 @@ class ItemPriceUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ItemPrice.objects.all()
     serializer_class = ItemPriceSerializer
 
+# Handle Image upload
+class ItemPhotoUploadView(APIView):
+
+    def post(self, request):
+        try:
+            serializer = ItemPhotoUploadSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            item = Item.objects.get(
+                pk=serializer.validated_data['item_id']
+            )
+
+            image_url = CloudinaryService.upload_image(
+                serializer.validated_data['image']
+            )
+
+            item.photo_url = image_url
+            item.save(update_fields=['photo_url'])
+
+            return Response(
+                {
+                    'message': 'Image uploaded successfully',
+                    'photo_url': image_url
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            print("ERROR in ItemPhotoUploadView:", str(e))
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {
+                    'detail': f'Failed to upload image: {str(e)}'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def delete(self, request):
+        try:
+            item_id = request.data.get('item_id')
+            if not item_id:
+                return Response(
+                    {'detail': 'item_id is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            item = Item.objects.get(pk=item_id)
+            item.photo_url = None
+            item.save(update_fields=['photo_url'])
+
+            return Response(
+                {'message': 'Image deleted successfully'},
+                status=status.HTTP_200_OK
+            )
+        except Item.DoesNotExist:
+            return Response(
+                {'detail': 'Item not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            print("ERROR in ItemPhotoUploadView (delete):", str(e))
+            return Response(
+                {
+                    'detail': f'Failed to delete image: {str(e)}'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )

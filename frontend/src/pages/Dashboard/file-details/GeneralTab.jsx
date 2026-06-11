@@ -338,11 +338,6 @@ export function GeneralTab() {
                 <FormButton variant="success" onClick={handleNewOrSaveClick}>
                     {isEditing ? 'Save' : 'New'}
                 </FormButton>
-
-                <FormButton variant="primary" onClick={() => {}}>
-                    List
-                </FormButton>
-
                 <FormButton variant="secondary" onClick={handleClear}>
                     Clear
                 </FormButton>

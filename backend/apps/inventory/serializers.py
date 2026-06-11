@@ -55,7 +55,7 @@ class ItemUnitSerializer(serializers.ModelSerializer):
 class ItemSimpleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id','item_code','name_1','sales_unit','stock_unit']
+        fields = ['id','item_code','name_1','sales_unit','stock_unit','photo_url']
 
 class ItemUnitSettingsUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,3 +76,8 @@ class ItemPriceSerializer(serializers.ModelSerializer):
             'sale_price', 
             'minimum_selling_price'
         ]
+
+# Handle Image upload
+class ItemPhotoUploadSerializer(serializers.Serializer):
+    item_id = serializers.IntegerField()
+    image = serializers.ImageField()

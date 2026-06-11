@@ -22,6 +22,12 @@ export const AppToaster = () => (
           color: "#fff",
         },
       },
+      loading: {
+        style: {
+          background: "#0f172a", // dark slate
+          color: "#fff",
+        },
+      },
     }}
   />
 );

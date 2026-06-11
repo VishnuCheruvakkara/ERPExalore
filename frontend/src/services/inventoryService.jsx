@@ -71,3 +71,21 @@ export const deleteProductPrice = async (priceId) => {
     const response = await api.delete(`/inventory/prices/${priceId}/`);
     return response.data;
 };
+
+// Upload product photo
+export const uploadProductPhoto = async (formData) => {
+    const response = await api.post('/inventory/items/upload-photo/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};
+
+// Delete product photo
+export const deleteProductPhoto = async (itemId) => {
+    const response = await api.delete('/inventory/items/upload-photo/', {
+        data: { item_id: itemId }
+    });
+    return response.data;
+};
