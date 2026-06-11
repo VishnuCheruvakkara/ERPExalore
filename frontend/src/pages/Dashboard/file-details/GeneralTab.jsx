@@ -1,7 +1,9 @@
+// GeneralTab.jsx
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from '../../../components/ui/FormInput';
+import FormSelect from '../../../components/ui/FormSelect';
 import FormButton from '../../../components/ui/FormButton';
 import { itemValidationSchema } from '../../../utils/validationSchema';
 import {
@@ -84,7 +86,7 @@ export function GeneralTab() {
             setIsEditing(true);
             return;
         }
-        handleSubmit(onFormSubmit,() => toast.error('Please fix the errors'))(e);
+        handleSubmit(onFormSubmit, () => toast.error('Please fix the errors'))(e);
     };
 
     const handleClear = () => {
@@ -218,13 +220,10 @@ export function GeneralTab() {
 
                 <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 items-start">
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Behaviour{' '}
-                            <span className="text-red-500 font-bold">* *</span>
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Behaviour"
+                            required
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('behaviour')}
                         >
                             {BEHAVIOUR_OPTIONS.map((option) => (
@@ -232,7 +231,7 @@ export function GeneralTab() {
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </FormSelect>
                         {errors.behaviour && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.behaviour.message}
@@ -241,18 +240,15 @@ export function GeneralTab() {
                     </div>
 
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Group Code{' '}
-                            <span className="text-red-500 font-bold">* *</span>
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Group Code"
+                            required
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('group_code')}
                         >
                             <option value="">Select Group Code *...</option>
                             {renderOptions(dropdowns.item_groups, 'group')}
-                        </select>
+                        </FormSelect>
                         {errors.group_code && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.group_code.message}
@@ -260,15 +256,11 @@ export function GeneralTab() {
                         )}
                     </div>
 
-                    {/* Status Field Updated: It is now mutable if isEditing is true */}
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Status{' '}
-                            <span className="text-red-500 font-bold">* *</span>
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Status"
+                            required
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('status')}
                         >
                             {STATUS_OPTIONS.map((option) => (
@@ -276,7 +268,7 @@ export function GeneralTab() {
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </FormSelect>
                         {errors.status && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.status.message}
@@ -285,13 +277,10 @@ export function GeneralTab() {
                     </div>
 
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Taxable Status{' '}
-                            <span className="text-red-500 font-bold">* *</span>
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Taxable Status"
+                            required
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('taxable_status')}
                         >
                             {TAXABLE_OPTIONS.map((option) => (
@@ -299,7 +288,7 @@ export function GeneralTab() {
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </FormSelect>
                         {errors.taxable_status && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.taxable_status.message}
@@ -308,17 +297,14 @@ export function GeneralTab() {
                     </div>
 
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Shelf Code
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Shelf Code"
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('shelf_code')}
                         >
                             <option value="">Select Shelf Code...</option>
                             {renderOptions(dropdowns.shelves, 'shelf')}
-                        </select>
+                        </FormSelect>
                         {errors.shelf_code && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.shelf_code.message}
@@ -327,12 +313,9 @@ export function GeneralTab() {
                     </div>
 
                     <div className="space-y-1 min-h-[75px]">
-                        <label className="text-[11px] font-semibold text-slate-600 block">
-                            Manufacturer
-                        </label>
-                        <select
+                        <FormSelect
+                            label="Manufacturer"
                             disabled={!isEditing}
-                            className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                             {...register('manufacturer')}
                         >
                             <option value="">Select Manufacturer...</option>
@@ -340,7 +323,7 @@ export function GeneralTab() {
                                 dropdowns.manufacturers,
                                 'manufacturer',
                             )}
-                        </select>
+                        </FormSelect>
                         {errors.manufacturer && (
                             <p className="text-red-500 text-xs mt-0.5">
                                 {errors.manufacturer.message}

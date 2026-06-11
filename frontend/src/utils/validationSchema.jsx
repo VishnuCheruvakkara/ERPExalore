@@ -62,3 +62,16 @@ export const itemValidationSchema = z.object({
         .optional()
         .or(z.literal('')),
 });
+
+export const unitBarcodeSchema = z.object({
+    selectedProductId: z.string().min(1, "Product is required"),
+    unit: z.string().min(1, "Unit is required"),
+    cofactor: z.coerce
+        .number({ invalid_type_error: "Required" })
+        .min(0.0001, "Must be greater than zero"),
+    barcode: z.string()
+        .min(1, "Barcode is required")
+        .regex(/^\d+$/, "Must contain only numbers"),
+    salesUnit: z.string().min(1, "Sales Unit is required"),
+    stockUnit: z.string().min(1, "Stock Unit is required"),
+});
