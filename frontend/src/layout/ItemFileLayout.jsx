@@ -36,6 +36,12 @@ function ItemFileLayout() {
         },
     ];
 
+    // Find active tab to display its description dynamically in the header
+    const activeTab = tabs.find((tab) => 
+        location.pathname === tab.path || 
+        (tab.id === 'general' && location.pathname === '/inventory/definitions/item-file')
+    ) || tabs[0];
+
     return (
         // Changed h-full to max-h-full and added overflow-hidden to prevent layout shattering
         <div className="flex flex-col h-full w-full space-y-3 p-2 overflow-hidden">
@@ -50,7 +56,7 @@ function ItemFileLayout() {
                         Item File
                     </h1>
                     <p className="text-xs text-slate-500 font-medium">
-                        Units and barcode management
+                        {activeTab.desc}
                     </p>
                 </div>
             </div>
