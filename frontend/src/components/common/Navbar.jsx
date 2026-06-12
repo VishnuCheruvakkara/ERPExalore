@@ -42,6 +42,7 @@ function Navbar() {
                     <span>admin</span>
                 </div>
 
+                
                 {/* LOGOUT */}
                 <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-800 hover:bg-indigo-900 text-white text-sm transition cursor-pointer">
                     <FiLogOut />

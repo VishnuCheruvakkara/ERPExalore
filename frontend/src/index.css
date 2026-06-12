@@ -40,9 +40,14 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Scrollbar */
+/* Vertical scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
+}
+
+/* Horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  height: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -52,4 +57,9 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+}
+
+/* Custom Height Utility */
+.h-8\.5 {
+  height: 2.125rem; /* 34px */
 }
