@@ -20,7 +20,7 @@ class OrderType(models.Model):
     def __str__(self): return self.name
 
 class Currency(models.Model):
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=50, unique=True)
     def __str__(self): return self.code
 
 class AbstractSalesDocument(models.Model):
@@ -35,6 +35,7 @@ class AbstractSalesDocument(models.Model):
     ex_rate = models.DecimalField(max_digits=10, decimal_places=4, default=1.0000)
     
     # Extra fields
+    cust_ref_num = models.CharField(max_length=40, blank=True)
     attention = models.CharField(max_length=255, blank=True)
     pay_terms = models.CharField(max_length=255, blank=True)
     delivery_place = models.CharField(max_length=255, blank=True)
@@ -56,7 +57,7 @@ class SalesQuotation(AbstractSalesDocument):
     """
     quotation_no = models.CharField(max_length=50, unique=True)
     quotation_type = models.ForeignKey(QuotationType, on_delete=models.PROTECT)
-    valid_until = models.DateField() # Matches your UI
+
     def __str__(self): return f"Quote: {self.quotation_no}"
 
 class SalesOrder(AbstractSalesDocument):
@@ -68,6 +69,8 @@ class SalesOrder(AbstractSalesDocument):
     order_type = models.ForeignKey(OrderType, on_delete=models.PROTECT)
     customer_po = models.CharField(max_length=100, blank=True)
     quotation = models.ForeignKey(SalesQuotation, on_delete=models.SET_NULL, null=True, blank=True)
+    valid_until = models.DateField(blank=True, null=True) # Matches your UI
+
     def __str__(self): return f"Order: {self.so_no}"
 
 class SalesLineItem(models.Model):

@@ -8,6 +8,8 @@ import { GeneralTab } from '../../pages/dashboard/file-details/GeneralTab';
 import { UnitBarcodeTab } from '../../pages/dashboard/file-details/UnitBarcodeTab';
 import { PriceListTab } from '../../pages/dashboard/file-details/PriceListTab';
 import { PhotoTab } from '../../pages/dashboard/file-details/PhotoTab';
+import SalesQuotation from '../../pages/sales/SalesQuotation';
+import SalesOrder from '../../pages/sales/SalesOrder';
 
 import ErrorPage from '../../pages/error-boundary/ErrorPage';
 
@@ -50,6 +52,14 @@ export const userRoutes = [
                         element: <PhotoTab />,
                     },
                 ],
+            },
+            {
+                path: 'sales/transactions/sales-quotation',
+                element: <SalesQuotation />,
+            },
+            {
+                path: 'sales/transactions/sales-order',
+                element: <SalesOrder />,
             },
         ],
     },

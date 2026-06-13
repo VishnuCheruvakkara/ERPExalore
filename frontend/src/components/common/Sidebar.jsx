@@ -47,8 +47,20 @@ const SIDEBAR_MENU_CONFIG = [
                 label: 'Transactions',
                 icon: FaReceipt,
                 links: [
-                    { id: 'sales_quotation', label: 'Sales Quotation', icon: FaFileLines, href: '#' },
-                    { id: 'sales_order', label: 'Sales Order', icon: FaBasketShopping, href: '#' }
+                    {
+                        id: 'sales_quotation',
+                        label: 'Sales Quotation',
+                        icon: FaFileLines,
+                        href: '/sales/transactions/sales-quotation',
+                        basePath: '/sales/transactions/sales-quotation'
+                    },
+                    {
+                        id: 'sales_order',
+                        label: 'Sales Order',
+                        icon: FaBasketShopping,
+                        href: '/sales/transactions/sales-order',
+                        basePath: '/sales/transactions/sales-order'
+                    }
                 ]
             }
         ]
@@ -59,11 +71,14 @@ function Sidebar() {
     const location = useLocation();
     const currentPath = location.pathname;
 
-    const [openMenus, setOpenMenus] = useState({
-        inventory: true,
-        sales: false,
-        inventory_defs: true,
-        sales_trans: false,
+    const [openMenus, setOpenMenus] = useState(() => {
+        const path = window.location.pathname;
+        return {
+            inventory: path.startsWith('/inventory') || path === '/',
+            sales: path.startsWith('/sales'),
+            inventory_defs: path.startsWith('/inventory/definitions'),
+            sales_trans: path.startsWith('/sales/transactions'),
+        };
     });
 
     const toggleMenu = (menuId) => {
