@@ -12,6 +12,7 @@ import {
 } from '../../services/salesService';
 import { salesQuotationSchema } from '../../utils/validationSchema';
 
+// blank sales Quotation form
 const emptyForm = {
     quotationNo: '',
     quotationTypeId: '',
@@ -27,6 +28,7 @@ const emptyForm = {
     notes: '',
 };
 
+// Create blank line items when click add row
 const emptyRow = (unitTypes = []) => ({
     itemId: '',
     code: '',
@@ -75,16 +77,27 @@ export default function SalesQuotation() {
     const deliveryPlace = watch('deliveryPlace') || '';
     const notes = watch('notes') || '';
 
-    const charLimits = { custRefNum: 40, attention: 200, payTerm: 100, deliveryPlace: 150, notes: 500 };
+    const charLimits = {
+        custRefNum: 40,
+        attention: 200,
+        payTerm: 100,
+        deliveryPlace: 150,
+        notes: 500,
+    };
 
     // Totals computed from line items
-    const totals = items.reduce((acc, row) => ({
-        gross: acc.gross + ((parseFloat(row.qty) || 0) * (parseFloat(row.rate) || 0)),
-        disc: acc.disc + (row.discAmt || 0),
-        net: acc.net + (row.net || 0),
-        vat: acc.vat + (row.vat || 0),
-        netAfterVat: acc.netAfterVat + (row.netAfterVat || 0),
-    }), { gross: 0, disc: 0, net: 0, vat: 0, netAfterVat: 0 });
+    const totals = items.reduce(
+        (acc, row) => ({
+            gross:
+                acc.gross +
+                (parseFloat(row.qty) || 0) * (parseFloat(row.rate) || 0),
+            disc: acc.disc + (row.discAmt || 0),
+            net: acc.net + (row.net || 0),
+            vat: acc.vat + (row.vat || 0),
+            netAfterVat: acc.netAfterVat + (row.netAfterVat || 0),
+        }),
+        { gross: 0, disc: 0, net: 0, vat: 0, netAfterVat: 0 },
+    );
 
     // Load lookups + next quotation number, then enable form
     const handleNew = async () => {
@@ -100,12 +113,14 @@ export default function SalesQuotation() {
             reset({
                 ...emptyForm,
                 quotationNo: nextNoData.quotation_no,
-                quotationTypeId: String(lookupsData.quotation_types[0]?.id ?? ''),
+                quotationTypeId: String(
+                    lookupsData.quotation_types[0]?.id ?? '',
+                ),
                 currencyId: String(lookupsData.currencies[0]?.id ?? ''),
             });
             setItems([emptyRow(lookupsData.unit_types)]);
             setIsEditing(true);
-            toast.success('Form ready — fill in the details and save.');
+            toast.success('Form ready, fill in the details and save.');
         } catch (err) {
             toast.error('Failed to load form data. Check your connection.');
             console.error(err);
@@ -115,9 +130,13 @@ export default function SalesQuotation() {
     };
 
     const onSave = async (data) => {
-        const validItems = items.filter(r => r.itemId && parseFloat(r.qty) > 0);
+        const validItems = items.filter(
+            (r) => r.itemId && parseFloat(r.qty) > 0,
+        );
         if (validItems.length === 0) {
-            toast.error('Add at least one line item with an item and quantity.');
+            toast.error(
+                'Add at least one line item with an item and quantity.',
+            );
             return;
         }
 
@@ -126,7 +145,9 @@ export default function SalesQuotation() {
             quotation_type_id: parseInt(data.quotationTypeId),
             date: data.date,
             customer_id: parseInt(data.customerId),
-            sales_executive_id: data.salesExecutiveId ? parseInt(data.salesExecutiveId) : null,
+            sales_executive_id: data.salesExecutiveId
+                ? parseInt(data.salesExecutiveId)
+                : null,
             currency_id: parseInt(data.currencyId),
             ex_rate: parseFloat(data.exRate) || 1,
             cust_ref_num: data.custRefNum,
@@ -137,7 +158,7 @@ export default function SalesQuotation() {
             gross_total: +totals.gross.toFixed(2),
             vat_total: +totals.vat.toFixed(2),
             net_after_vat: +totals.netAfterVat.toFixed(2),
-            items: validItems.map(row => ({
+            items: validItems.map((row) => ({
                 item_id: parseInt(row.itemId),
                 description: row.description,
                 unit_id: parseInt(row.unitId),
@@ -154,18 +175,31 @@ export default function SalesQuotation() {
         setLoading(true);
         try {
             await createSalesQuotation(payload);
-            toast.success(`Sales Quotation ${data.quotationNo} saved successfully!`);
+            toast.success(
+                `Sales Quotation ${data.quotationNo} saved successfully!`,
+            );
             setIsEditing(false);
             // Reset to blank view
             reset(emptyForm);
             setItems([emptyRow()]);
-            setLookups({ customers: [], sales_executives: [], quotation_types: [], currencies: [], items: [], unit_types: [] });
+            setLookups({
+                customers: [],
+                sales_executives: [],
+                quotation_types: [],
+                currencies: [],
+                items: [],
+                unit_types: [],
+            });
         } catch (err) {
-            const msg = err?.response?.data
-                ? JSON.stringify(err.response.data)
-                : 'Save failed. Please try again.';
+            const data = err?.response?.data;
+
+            let msg = 'Save failed. Please try again.';
+
+            if (data?.items?.[0]?.disc_pct?.[0]) {
+                msg = 'Discount % cannot exceed 999.99';
+            }
+
             toast.error(msg);
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -175,7 +209,14 @@ export default function SalesQuotation() {
         setIsEditing(false);
         reset(emptyForm);
         setItems([emptyRow()]);
-        setLookups({ customers: [], sales_executives: [], quotation_types: [], currencies: [], items: [], unit_types: [] });
+        setLookups({
+            customers: [],
+            sales_executives: [],
+            quotation_types: [],
+            currencies: [],
+            items: [],
+            unit_types: [],
+        });
         toast.success('Changes discarded.');
     };
 
@@ -183,13 +224,14 @@ export default function SalesQuotation() {
         <div className="w-full max-w-7xl mx-auto space-y-4 p-2">
             {/* Page heading */}
             <div className="text-center py-1.5">
-                <h1 className="text-lg font-bold tracking-tight text-slate-800">Sales Quotation</h1>
+                <h1 className="text-lg font-bold tracking-tight text-slate-800">
+                    Sales Quotation
+                </h1>
             </div>
 
             {/* Header form fields */}
             <div className="bg-white border border-slate-200/80 shadow-sm rounded-lg p-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-4">
-
                     <div>
                         <FormInput
                             label="Quotation No"
@@ -205,12 +247,16 @@ export default function SalesQuotation() {
                             {...register('quotationTypeId')}
                         >
                             <option value="">Select type</option>
-                            {lookups.quotation_types.map(t => (
-                                <option key={t.id} value={t.id}>{t.name}</option>
+                            {lookups.quotation_types.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                    {t.name}
+                                </option>
                             ))}
                         </FormSelect>
                         {errors.quotationTypeId && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.quotationTypeId.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.quotationTypeId.message}
+                            </p>
                         )}
                     </div>
 
@@ -222,7 +268,9 @@ export default function SalesQuotation() {
                             {...register('date')}
                         />
                         {errors.date && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.date.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.date.message}
+                            </p>
                         )}
                     </div>
 
@@ -233,12 +281,16 @@ export default function SalesQuotation() {
                             {...register('customerId')}
                         >
                             <option value="">Select customer</option>
-                            {lookups.customers.map(c => (
-                                <option key={c.id} value={c.id}>{c.code} — {c.name}</option>
+                            {lookups.customers.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.code} — {c.name}
+                                </option>
                             ))}
                         </FormSelect>
                         {errors.customerId && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.customerId.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.customerId.message}
+                            </p>
                         )}
                     </div>
 
@@ -252,7 +304,9 @@ export default function SalesQuotation() {
                             maxChars={charLimits.custRefNum}
                         />
                         {errors.custRefNum && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.custRefNum.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.custRefNum.message}
+                            </p>
                         )}
                     </div>
 
@@ -263,12 +317,16 @@ export default function SalesQuotation() {
                             {...register('salesExecutiveId')}
                         >
                             <option value="">Select executive</option>
-                            {lookups.sales_executives.map(e => (
-                                <option key={e.id} value={e.id}>{e.name}</option>
+                            {lookups.sales_executives.map((e) => (
+                                <option key={e.id} value={e.id}>
+                                    {e.name}
+                                </option>
                             ))}
                         </FormSelect>
                         {errors.salesExecutiveId && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.salesExecutiveId.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.salesExecutiveId.message}
+                            </p>
                         )}
                     </div>
 
@@ -282,7 +340,9 @@ export default function SalesQuotation() {
                             maxChars={charLimits.attention}
                         />
                         {errors.attention && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.attention.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.attention.message}
+                            </p>
                         )}
                     </div>
 
@@ -296,7 +356,9 @@ export default function SalesQuotation() {
                             maxChars={charLimits.payTerm}
                         />
                         {errors.payTerm && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.payTerm.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.payTerm.message}
+                            </p>
                         )}
                     </div>
 
@@ -310,7 +372,9 @@ export default function SalesQuotation() {
                             maxChars={charLimits.deliveryPlace}
                         />
                         {errors.deliveryPlace && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.deliveryPlace.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.deliveryPlace.message}
+                            </p>
                         )}
                     </div>
 
@@ -321,12 +385,16 @@ export default function SalesQuotation() {
                             {...register('currencyId')}
                         >
                             <option value="">Select currency</option>
-                            {lookups.currencies.map(c => (
-                                <option key={c.id} value={c.id}>{c.code}</option>
+                            {lookups.currencies.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.code}
+                                </option>
                             ))}
                         </FormSelect>
                         {errors.currencyId && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.currencyId.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.currencyId.message}
+                            </p>
                         )}
                     </div>
 
@@ -339,11 +407,13 @@ export default function SalesQuotation() {
                             {...register('exRate')}
                         />
                         {errors.exRate && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.exRate.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.exRate.message}
+                            </p>
                         )}
                     </div>
 
-                    <div >
+                    <div>
                         <FormInput
                             label="Notes"
                             placeholder="Notes..."
@@ -353,7 +423,9 @@ export default function SalesQuotation() {
                             maxChars={charLimits.notes}
                         />
                         {errors.notes && (
-                            <p className="text-red-500 text-[10px] mt-1 font-semibold">{errors.notes.message}</p>
+                            <p className="text-red-500 text-[10px] mt-1 font-semibold">
+                                {errors.notes.message}
+                            </p>
                         )}
                     </div>
                 </div>
@@ -373,11 +445,31 @@ export default function SalesQuotation() {
             {/* Totals + action bar */}
             <div className="bg-white border border-slate-200/80 shadow-sm rounded-lg p-4 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    <FormInput label="Gross" disabled value={totals.gross.toFixed(2)} />
-                    <FormInput label="Disc" disabled value={totals.disc.toFixed(2)} />
-                    <FormInput label="Net Total" disabled value={totals.net.toFixed(2)} />
-                    <FormInput label="VAT" disabled value={totals.vat.toFixed(2)} />
-                    <FormInput label="Net After VAT" disabled value={totals.netAfterVat.toFixed(2)} />
+                    <FormInput
+                        label="Gross"
+                        disabled
+                        value={totals.gross.toFixed(2)}
+                    />
+                    <FormInput
+                        label="Disc"
+                        disabled
+                        value={totals.disc.toFixed(2)}
+                    />
+                    <FormInput
+                        label="Net Total"
+                        disabled
+                        value={totals.net.toFixed(2)}
+                    />
+                    <FormInput
+                        label="VAT"
+                        disabled
+                        value={totals.vat.toFixed(2)}
+                    />
+                    <FormInput
+                        label="Net After VAT"
+                        disabled
+                        value={totals.netAfterVat.toFixed(2)}
+                    />
                 </div>
 
                 {/* Action buttons */}
@@ -394,7 +486,9 @@ export default function SalesQuotation() {
                     ) : (
                         <button
                             type="button"
-                            onClick={handleSubmit(onSave, () => toast.error('Please fix the errors'))}
+                            onClick={handleSubmit(onSave, () =>
+                                toast.error('Please fix the errors'),
+                            )}
                             disabled={loading}
                             className="inline-flex items-center justify-center px-5 py-1.5 text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer shadow-sm min-w-[76px] bg-[#00b67a] hover:bg-[#00a36c] disabled:opacity-60 disabled:cursor-not-allowed"
                         >

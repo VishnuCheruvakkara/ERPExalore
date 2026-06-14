@@ -60,7 +60,7 @@ class SalesQuotationSerializer(serializers.ModelSerializer):
         quotation = SalesQuotation.objects.create(**validated_data)
         
         for item_data in items_data:
-            SalesLineItem.objects.create(quotation=quotation, **item_data)
+            SalesLineItem.objects.create(quotation=quotation,item_id=item_data.pop("item_id"),unit_id=item_data.pop("unit_id"), **item_data)
             
         return quotation
 

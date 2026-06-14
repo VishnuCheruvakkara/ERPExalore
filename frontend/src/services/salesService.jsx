@@ -1,5 +1,7 @@
 import api from '../api/axios';
 
+//---------------------------- Sales Quotation
+
 // Load all dropdown data for the Sales Quotation form
 export const getSalesQuotationLookups = async () => {
     const response = await api.get('/sales/lookups/');
@@ -17,6 +19,14 @@ export const createSalesQuotation = async (quotationData) => {
     const response = await api.post('/sales/quotations/', quotationData);
     return response.data;
 };
+
+// Get details of a single Sales Quotation by ID
+export const getSalesQuotationDetails = async (id) => {
+    const response = await api.get(`/sales/quotations/${id}/`);
+    return response.data;
+};
+
+//---------------------------- Sales Orders 
 
 // Load all dropdown data for the Sales Order form
 export const getSalesOrderLookups = async () => {
@@ -36,11 +46,6 @@ export const createSalesOrder = async (orderData) => {
     return response.data;
 };
 
-// Get details of a single Sales Quotation by ID
-export const getSalesQuotationDetails = async (id) => {
-    const response = await api.get(`/sales/quotations/${id}/`);
-    return response.data;
-};
 
 // Get details of a single Sales Order by ID
 export const getSalesOrderDetails = async (id) => {

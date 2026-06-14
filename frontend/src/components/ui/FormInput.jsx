@@ -8,7 +8,7 @@ const FormInput = React.forwardRef(function FormInput(
     placeholder,
     disabled = false,
     required = false,
-    className = "", // For grid layouts like md:col-span-2
+    className = "",
     charCount,
     maxChars,
     ...rest
@@ -20,7 +20,8 @@ const FormInput = React.forwardRef(function FormInput(
       {label && (
         <label className="text-[11px] font-semibold text-slate-600 block">
           {label} {required && <span className="text-red-500 font-bold">* *</span>}
-        </label>
+              </label>
+              
       )}
 
       <input

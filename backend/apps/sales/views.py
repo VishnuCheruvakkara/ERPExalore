@@ -15,55 +15,13 @@ from .serializers import (
 from inventory.models import Item, UnitType, ItemGroup
 from inventory.serializers import UnitTypeSerializer, ItemSimpleListSerializer
 
-
+# Sales quotation handling 
 class SalesQuotationLookupView(APIView):
     """
     Returns all dropdown data needed to fill the Sales Quotation form.
     Seeds initial records if tables are empty (dev convenience).
     """
     def get(self, request, format=None):
-        # Seed lookup tables when empty
-        if not Customer.objects.exists():
-            Customer.objects.create(code='CUST-001', name='Saudi Trading Co.')
-            Customer.objects.create(code='CUST-002', name='Gulf Logistics Ltd.')
-            Customer.objects.create(code='CUST-003', name='Riyadh Enterprise')
-
-        if not SalesExecutive.objects.exists():
-            SalesExecutive.objects.create(name='John Doe')
-            SalesExecutive.objects.create(name='Sarah Smith')
-            SalesExecutive.objects.create(name='Mohammed Ali')
-
-        if not QuotationType.objects.exists():
-            QuotationType.objects.create(name='Standard Quotation')
-            QuotationType.objects.create(name='Urgent Quotation')
-
-        if not Currency.objects.exists():
-            Currency.objects.create(code='1 - SAUDI RIYAL')
-            Currency.objects.create(code='2 - US DOLLAR')
-            Currency.objects.create(code='3 - UAE DIRHAM')
-
-        if not UnitType.objects.exists():
-            UnitType.objects.create(code='PCS', name='Pieces')
-            UnitType.objects.create(code='BOX', name='Box')
-            UnitType.objects.create(code='KG', name='Kilograms')
-
-        if not Item.objects.exists():
-            group, _ = ItemGroup.objects.get_or_create(code='GRP01', defaults={'name': 'General Items'})
-            unit = UnitType.objects.first()
-            Item.objects.create(
-                item_code='ITEM001',
-                name_1='Wireless Mouse',
-                description='High-precision wireless optical mouse',
-                group_code=group, sales_unit=unit, stock_unit=unit,
-                status='active', taxable_status='taxable'
-            )
-            Item.objects.create(
-                item_code='ITEM002',
-                name_1='Mechanical Keyboard',
-                description='RGB mechanical keyboard with red switches',
-                group_code=group, sales_unit=unit, stock_unit=unit,
-                status='active', taxable_status='taxable'
-            )
 
         return Response({
             'customers': CustomerSerializer(Customer.objects.all().order_by('code'), many=True).data,
@@ -97,7 +55,7 @@ class SalesQuotationCreateView(generics.CreateAPIView):
     queryset = SalesQuotation.objects.all()
     serializer_class = SalesQuotationSerializer
 
-
+# Sales order handling 
 class SalesOrderLookupView(APIView):
     """
     Returns all dropdown data needed to fill the Sales Order form.
