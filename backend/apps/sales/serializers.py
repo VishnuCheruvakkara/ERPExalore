@@ -41,10 +41,10 @@ class SalesLineItemSerializer(serializers.ModelSerializer):
 
 class SalesQuotationSerializer(serializers.ModelSerializer):
     items = SalesLineItemSerializer(many=True)
-    customer_id = serializers.IntegerField(write_only=True)
-    sales_executive_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
-    currency_id = serializers.IntegerField(write_only=True)
-    quotation_type_id = serializers.IntegerField(write_only=True)
+    customer_id = serializers.IntegerField()
+    sales_executive_id = serializers.IntegerField(required=False, allow_null=True)
+    currency_id = serializers.IntegerField()
+    quotation_type_id = serializers.IntegerField()
 
     class Meta:
         model = SalesQuotation
@@ -67,11 +67,11 @@ class SalesQuotationSerializer(serializers.ModelSerializer):
 
 class SalesOrderSerializer(serializers.ModelSerializer):
     items = SalesLineItemSerializer(many=True)
-    customer_id = serializers.IntegerField(write_only=True)
-    sales_executive_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
-    currency_id = serializers.IntegerField(write_only=True)
-    order_type_id = serializers.IntegerField(write_only=True)
-    quotation_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    customer_id = serializers.IntegerField()
+    sales_executive_id = serializers.IntegerField(required=False, allow_null=True)
+    currency_id = serializers.IntegerField()
+    order_type_id = serializers.IntegerField()
+    quotation_id = serializers.IntegerField(required=False, allow_null=True)
 
     class Meta:
         model = SalesOrder
@@ -85,5 +85,5 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         items_data = validated_data.pop('items')
         order = SalesOrder.objects.create(**validated_data)
         for item_data in items_data:
-            SalesLineItem.objects.create(order=order, **item_data)
+            SalesLineItem.objects.create(order=order,item_id=item_data.pop("item_id"),unit_id=item_data.pop("unit_id"), **item_data)
         return order

@@ -89,7 +89,7 @@ export default function SalesOrder() {
         const loadQuotation = async () => {
             try {
                 const quote = await getSalesQuotationDetails(quotationId);
-                
+
                 // Populate form fields
                 setValue('customerId', String(quote.customer_id || ''));
                 setValue('salesExecutiveId', String(quote.sales_executive_id || ''));

@@ -125,13 +125,10 @@ export default function SalesTable({ items = [], onChange, isEditing = false, un
                                 <div>VAT</div>
                                 <div className="text-[8px] text-slate-400 font-normal normal-case">AUTO</div>
                             </th>
-                            <th className="bg-[#11132d] py-2.5 px-3 border-r border-[#1a1c3d] w-[105px]">
+                            <th className="bg-[#11132d] py-2.5 px-3 w-[105px]">
                                 <div>Net After VAT</div>
                                 <div className="text-[8px] text-slate-400 font-normal normal-case">AUTO</div>
                             </th>
-                            {isEditing && (
-                                <th className="bg-[#11132d] py-2.5 px-3 w-[46px] text-center border-l border-[#1a1c3d]">Del</th>
-                            )}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -255,20 +252,6 @@ export default function SalesTable({ items = [], onChange, isEditing = false, un
                                 <td className="py-2 px-3 border-r border-slate-100 text-right font-semibold text-slate-700 bg-slate-50/40">
                                     {(item.netAfterVat || 0).toFixed(2)}
                                 </td>
-
-                                {/* Delete row */}
-                                {isEditing && (
-                                    <td className="py-2 px-2 text-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeRow(index)}
-                                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 cursor-pointer transition-colors"
-                                            title="Remove row"
-                                        >
-                                            <FaTrash className="h-3.5 w-3.5" />
-                                        </button>
-                                    </td>
-                                )}
                             </tr>
                         ))}
                     </tbody>

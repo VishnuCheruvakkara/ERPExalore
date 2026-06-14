@@ -20,8 +20,8 @@ const FormInput = React.forwardRef(function FormInput(
       {label && (
         <label className="text-[11px] font-semibold text-slate-600 block">
           {label} {required && <span className="text-red-500 font-bold">* *</span>}
-              </label>
-              
+        </label>
+
       )}
 
       <input
