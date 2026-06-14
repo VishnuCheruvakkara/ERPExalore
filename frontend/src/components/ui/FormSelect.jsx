@@ -29,8 +29,8 @@ const FormSelect = React.forwardRef(function FormSelect(
                 name={name}
                 disabled={disabled}
                 {...rest}
-                className={`w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 cursor-pointer transition-colors
-          ${disabled ? 'bg-slate-50/70 text-slate-400 cursor-not-allowed opacity-60' : ''}
+                className={`w-full text-xs px-3 py-1.5 border border-slate-200 bg-slate-50/40 rounded focus:outline-hidden focus:border-slate-400 text-slate-700 cursor-pointer transition-colors
+          ${disabled ? 'bg-slate-100 text-slate-400 border-slate-200/80 cursor-not-allowed opacity-90' : ''}
         `}
             >
                 {children}

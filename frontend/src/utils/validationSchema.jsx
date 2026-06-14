@@ -90,3 +90,42 @@ export const priceListSchema = z.object({
     message: "Min Selling Price cannot exceed Sale Price",
     path: ["minimum_selling_price"],
 });
+
+export const salesQuotationSchema = z.object({
+    quotationNo: z.string().min(1, "Quotation No is required"),
+    quotationTypeId: z.string().min(1, "Quotation Type is required"),
+    date: z.string().min(1, "Date is required"),
+    customerId: z.string().min(1, "Customer is required"),
+    salesExecutiveId: z.string().optional().or(z.literal('')),
+    currencyId: z.string().min(1, "Currency is required"),
+    exRate: z.coerce.number().min(0.0001, "Exchange Rate must be greater than zero"),
+    custRefNum: z.string().max(40, "Customer Ref No must be under 40 characters").optional().or(z.literal('')),
+    attention: z.string().max(255, "Attention must be under 255 characters").optional().or(z.literal('')),
+    payTerm: z.string().max(255, "Pay Term must be under 255 characters").optional().or(z.literal('')),
+    deliveryPlace: z.string().max(255, "Delivery Place must be under 255 characters").optional().or(z.literal('')),
+    notes: z.string().max(500, "Notes must be under 500 characters").optional().or(z.literal('')),
+});
+
+export const salesOrderSchema = z.object({
+    soNo: z.string().min(1, "SO No is required"),
+    orderTypeId: z.string().min(1, "Sales Order Type is required"),
+    date: z.string().min(1, "Issue Date is required"),
+    // Validation for validUntil:
+    validUntil: z.string().min(1, "Valid Until is required").refine((val) => {
+        const selectedDate = new Date(val);
+        const today = new Date();
+        // Reset time to midnight for accurate date-only comparison
+        today.setHours(0, 0, 0, 0);
+        return selectedDate >= today;
+    }, {
+        message: "Valid Until date must be today or in the future",
+    }),
+    customerId: z.string().min(1, "Customer is required"),
+    salesExecutiveId: z.string().optional().or(z.literal('')),
+    currencyId: z.string().min(1, "Currency is required"),
+    exRate: z.coerce.number().min(0.0001, "Exchange Rate must be greater than zero"),
+    customerPo: z.string().max(100, "Customer PO must be under 100 characters").optional().or(z.literal('')),
+    quotationId: z.string().optional().or(z.literal('')),
+    deliveryPlace: z.string().max(255, "Delivery Place must be under 255 characters").optional().or(z.literal('')),
+    notes: z.string().max(500, "Notes must be under 500 characters").optional().or(z.literal('')),
+});
