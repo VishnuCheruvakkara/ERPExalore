@@ -84,11 +84,30 @@ cp .env.example .env
 
 Configure the values inside.
 
-> **Note:** Cloudinary configuration is required only for image uploads. Create a Cloudinary account and configure the Cloudinary credentials accordingly.
+> **SECRET_KEY:** Generate a new Django secret key and replace the default value in the `.env` file:
 >
+> ```bash
+> python -c "import secrets; print(secrets.token_urlsafe(50))"
+> ```
+>
+> Copy the generated value and set it as:
+>
+> ```env
+> SECRET_KEY=your_generated_secret_key
+> ```
+
+> **Note:** Cloudinary configuration is required only for image uploads. Create a Cloudinary account and configure the following credentials accordingly:
+>
+> ```env
+> CLOUDINARY_CLOUD_NAME=your_cloud_name
+> CLOUDINARY_API_KEY=your_api_key
+> CLOUDINARY_API_SECRET=your_api_secret
+> ```
+
 > **Database:** The default PostgreSQL settings are configured for the Docker-based setup provided with this project. For the initial setup, you can leave the database configuration unchanged unless you are using an external PostgreSQL instance.
 
 Save the file after configuration.
+
 
 ### Frontend Environment Setup
 
