@@ -64,7 +64,6 @@ class SalesQuotationSerializer(serializers.ModelSerializer):
             
         return quotation
 
-
 class SalesOrderSerializer(serializers.ModelSerializer):
     items = SalesLineItemSerializer(many=True)
     customer_id = serializers.IntegerField()
